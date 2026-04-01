@@ -81,6 +81,13 @@ function _parseDate(s) {
   return isNaN(d.getTime()) ? null : d;
 }
 
+// ─── 解析"创:YYYY-MM-DD HH:MM:SS"格式的创建日期 ────────────────────────────
+function parseCreateDate(str) {
+  if (!str) return null;
+  const match = str.match(/创:(\d{4}-\d{2}-\d{2})/);
+  return match ? new Date(match[1]) : null;
+}
+
 // ─── 话题（hashtag）提取 ──────────────────────────────────────────────────────
 /**
  * extractHashtags(content) → string[]
@@ -180,18 +187,19 @@ function parseCSV(text) {
       };
 
       rows.push({
-        id:        parseInt(get('id')) || 0,
-        user:      fieldParsers.user(get('user')),
-        content:   get('content').trim(),
-        attr:      fieldParsers.attr(get('attr')),
-        status:    fieldParsers.status(get('status')),
-        ip:        fieldParsers.ip(get('ip')),
-        sort:      parseInt(get('sort')) || 0,
-        type:      get('type').trim(),
-        moderator: fieldParsers.moderator(get('moderator')),
-        date:      _parseDate(get('date')),      // Date | null
-        topics:    extractHashtags(get('content').trim()),  // string[]
-        _raw:      f,
+        id:         parseInt(get('id')) || 0,
+        user:       fieldParsers.user(get('user')),
+        content:    get('content').trim(),
+        attr:       fieldParsers.attr(get('attr')),
+        status:     fieldParsers.status(get('status')),
+        ip:         fieldParsers.ip(get('ip')),
+        sort:       parseInt(get('sort')) || 0,
+        type:       get('type').trim(),
+        moderator:  fieldParsers.moderator(get('moderator')),
+        date:       _parseDate(get('date')),           // Date | null
+        createDate: parseCreateDate(get('date')),      // 从"创:YYYY-MM-DD"提取
+        topics:     extractHashtags(get('content').trim()),  // string[]
+        _raw:       f,
       });
     } catch(e) { /* 跳过解析失败的行 */ }
   }

@@ -73,6 +73,8 @@ function filterRows(rows, filters = {}) {
     if (filters.certified  && r.user?.certified !== filters.certified)          return false;
     if (filters.balMin     && (r.user?.balance || 0) < filters.balMin)          return false;
     if (filters.hasComment && (r.attr?.comments || 0) === 0)                    return false;
+    if (filters.dateMin    && (!(r.createDate instanceof Date) || r.createDate < filters.dateMin)) return false;
+    if (filters.dateMax    && (!(r.createDate instanceof Date) || r.createDate > filters.dateMax)) return false;
     return true;
   });
 }
